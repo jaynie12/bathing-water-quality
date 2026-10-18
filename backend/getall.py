@@ -1,4 +1,5 @@
 from io import StringIO
+from urllib import response
 
 import folium
 import pandas as pd
@@ -21,6 +22,10 @@ def load_all_bathing_waters():
         headers={"User-Agent": "bathing-water-quality-app/1.0"},
         timeout=30,
     )
+
+    print("Status:", response.status_code)
+    print("Response:", response.text[:1000])
+
     response.raise_for_status()
 
     return pd.read_csv(StringIO(response.text))
