@@ -1,6 +1,3 @@
-from io import StringIO
-from urllib import response
-
 import folium
 import pandas as pd
 import plotly.express as px
@@ -12,23 +9,12 @@ st.set_page_config(
     page_title="UK Bathing Water Dashboard", page_icon="🌊", layout="wide"
 )
 
-
 @st.cache_data
 def load_all_bathing_waters():
-    url = "https://environment.data.gov.uk/doc/bathing-water.csv?_pageSize=1000&_page=0"
-
-    response = requests.get(
-        url,
-        headers={"User-Agent": "bathing-water-quality-app/1.0"},
-        timeout=30,
-    )
-
-    print("Status:", response.status_code)
-    print("Response:", response.text[:1000])
-
-    response.raise_for_status()
-
-    return pd.read_csv(StringIO(response.text))
+  url = "https://environment.data.gov.uk/doc/bathing-water.csv?_pageSize=1000&_page=0"
+  df = pd.read_csv(url)
+  df.to_csv("data/bathing_waters.csv", index=False)
+  return df
 
 
 @st.cache_data
@@ -37,7 +23,6 @@ def fetch_compliance_history(sampling_point_id, location_name="Site"):
   history = []
 
   urls = [
-      f"https://environment.data.gov.uk/data/bathing-water-quality/compliance/slice/point/{sampling_point_id}.json",
       f"https://environment.data.gov.uk/doc/bathing-water-quality/compliance/slice/point/{sampling_point_id}.json",
   ]
 
