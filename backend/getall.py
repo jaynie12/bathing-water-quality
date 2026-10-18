@@ -1,3 +1,5 @@
+from io import StringIO
+
 import folium
 import pandas as pd
 import plotly.express as px
@@ -12,9 +14,16 @@ st.set_page_config(
 
 @st.cache_data
 def load_all_bathing_waters():
-  url = "https://environment.data.gov.uk/doc/bathing-water.csv?_pageSize=1000&_page=0"
-  df = pd.read_csv(url)
-  return df
+    url = "https://environment.data.gov.uk/doc/bathing-water.csv?_pageSize=1000&_page=0"
+
+    response = requests.get(
+        url,
+        headers={"User-Agent": "bathing-water-quality-app/1.0"},
+        timeout=30,
+    )
+    response.raise_for_status()
+
+    return pd.read_csv(StringIO(response.text))
 
 
 @st.cache_data
