@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import folium
 import pandas as pd
 import plotly.express as px
@@ -9,18 +11,35 @@ st.set_page_config(
     page_title="UK Bathing Water Dashboard", page_icon="🌊", layout="wide"
 )
 
+DATA_DIR = Path(__file__).resolve().parent / "data"
+MAIN_CSV_PATH = DATA_DIR / "bathing_waters.csv"
+HISTORY_CSV_PATH = DATA_DIR / "compliance_history.csv"
+
+
 @st.cache_data
 def load_all_bathing_waters():
-  url = "https://environment.data.gov.uk/doc/bathing-water.csv?_pageSize=1000&_page=0"
-  df = pd.read_csv(url)
-  df.to_csv("data/bathing_waters.csv", index=False)
-  return df
+  DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+  if MAIN_CSV_PATH.exists():
+    return pd.read_csv(MAIN_CSV_PATH)
 
 @st.cache_data
 def fetch_compliance_history(sampling_point_id, location_name="Site"):
   score_map = {"Excellent": 4, "Good": 3, "Sufficient": 2, "Poor": 1}
   history = []
+
+  if HISTORY_CSV_PATH.exists():
+    try:
+      df_history = pd.read_csv(HISTORY_CSV_PATH)
+      if "sampling_point_id" in df_history.columns:
+        filtered = df_history[
+            df_history["sampling_point_id"].astype(str) == str(sampling_point_id)
+        ].copy()
+        if not filtered.empty:
+          filtered = filtered[["Year", "Classification", "Quality Rating Score"]]
+          return filtered.sort_values("Year").drop_duplicates(subset=["Year"])
+    except Exception:
+      pass
 
   urls = [
       f"https://environment.data.gov.uk/doc/bathing-water-quality/compliance/slice/point/{sampling_point_id}.json",
