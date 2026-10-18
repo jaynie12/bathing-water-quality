@@ -159,8 +159,7 @@ if active_location and active_location in df_clean["name"].values:
 
   st.title(f"🌊 Site Profile: {active_location}")
   st.caption(
-      f"District: **{district}** | EU ID: `{eubwid}` | Sampling Point ID:"
-      f" `{sp_id}` | Current Classification: **{classification}**"
+      f"District: **{district}** | EU ID: `{eubwid}`"
   )
 
   # Metadata Boxes
@@ -170,11 +169,11 @@ if active_location and active_location in df_clean["name"].values:
   with col_box2:
     if "Yes" in rain_str:
       st.warning(
-          f"🌧️ **Rainfall Impact (`waterQualityImpactedByHeavyRain`):**\n\n{rain_str}"
+          f"🌧️ **Rainfall Impact (`Impact of rainfall on water quality`):**\n\n{rain_str}"
       )
     else:
       st.success(
-          f"🌧️ **Rainfall Impact (`waterQualityImpactedByHeavyRain`):**\n\n{rain_str}"
+          f"🌧️ **Rainfall Impact (`Impact of rainfall on water quality`):**\n\n{rain_str}"
       )
 
   st.markdown("---")
